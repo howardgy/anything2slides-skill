@@ -1,6 +1,6 @@
-# PPT2reveal
+# PPT2slides-skill
 
-`PPT2reveal` 是一个面向 Codex 生态的 skill，用来把 PowerPoint `.pptx` 演示文稿转换为可编辑、可本地打开、适合演讲的 Reveal.js HTML 幻灯片。
+`PPT2slides-skill` 是一个面向 Codex 生态的 skill，用来把 PowerPoint `.pptx` 演示文稿转换为可编辑、可本地打开、适合演讲的 Reveal.js HTML 幻灯片。
 
 它的工作方式不是简单截图导出，而是先解析 PPTX 里的文本、备注、图片和版式几何信息，再生成一个结构尽量忠实于原稿的网页演示文档。
 
@@ -53,13 +53,13 @@
 
 ```bash
 mkdir -p ~/.codex/skills
-cp -R /path/to/PPT2reveal/ppt2reveal ~/.codex/skills/
+cp -R /path/to/PPT2slides-skill/ppt2slides-skill ~/.codex/skills/
 ```
 
 安装完成后，目录通常会变成：
 
 ```text
-~/.codex/skills/ppt2reveal/
+~/.codex/skills/ppt2slides-skill/
 ├── SKILL.md
 ├── agents/
 ├── assets/
@@ -74,7 +74,7 @@ cp -R /path/to/PPT2reveal/ppt2reveal ~/.codex/skills/
 ```bash
 git clone <your-github-repo-url>
 mkdir -p ~/.codex/skills
-cp -R PPT2reveal/ppt2reveal ~/.codex/skills/
+cp -R PPT2slides-skill/ppt2slides-skill ~/.codex/skills/
 ```
 
 ## 依赖要求
@@ -95,7 +95,7 @@ libreoffice --headless --convert-to pptx --outdir "./converted" "./input.ppt"
 你可以直接让代理调用这个 skill，例如：
 
 ```text
-用 $ppt2reveal 把这个 PPTX 转成一个可演讲的 Reveal.js HTML 演示文稿
+用 $ppt2slides-skill 把这个 PPTX 转成一个可演讲的 Reveal.js HTML 演示文稿
 ```
 
 适合的请求方式包括：
@@ -110,7 +110,7 @@ libreoffice --headless --convert-to pptx --outdir "./converted" "./input.ppt"
 1. 提取 PPTX bundle
 
 ```bash
-python3 /path/to/ppt2reveal/scripts/extract_pptx_bundle.py \
+python3 /path/to/ppt2slides-skill/scripts/extract_pptx_bundle.py \
   /path/to/input.pptx \
   /path/to/work/extracted
 ```
@@ -124,7 +124,7 @@ python3 /path/to/ppt2reveal/scripts/extract_pptx_bundle.py \
 2. 生成 Reveal.js HTML deck
 
 ```bash
-python3 /path/to/ppt2reveal/scripts/bootstrap_reveal_from_bundle.py \
+python3 /path/to/ppt2slides-skill/scripts/bootstrap_reveal_from_bundle.py \
   /path/to/work/extracted \
   /path/to/work/show_ready
 ```
@@ -169,35 +169,31 @@ show_ready/
 ## 项目结构
 
 ```text
-PPT2reveal/
-├── ppt2reveal/
+PPT2slides-skill/
+├── ppt2slides-skill/
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   ├── assets/
 │   ├── references/
 │   └── scripts/
-└── test/
 ```
 
 其中：
 
-- `ppt2reveal/SKILL.md`：skill 主说明和使用规则
-- `ppt2reveal/agents/openai.yaml`：代理展示配置
-- `ppt2reveal/assets/`：HTML 模板、CSS、speaker notes 模板
-- `ppt2reveal/references/output_contract.md`：提取结果字段说明
-- `ppt2reveal/scripts/`：两个核心脚本
-- `test/`：示例 PPT 与生成样例
+- `ppt2slides-skill/SKILL.md`：skill 主说明和使用规则
+- `ppt2slides-skill/agents/openai.yaml`：代理展示配置
+- `ppt2slides-skill/assets/`：HTML 模板、CSS、speaker notes 模板
+- `ppt2slides-skill/references/output_contract.md`：提取结果字段说明
+- `ppt2slides-skill/scripts/`：两个核心脚本
 
-## 已验证的本地命令
+## 命令示例
 
-仓库内当前示例已经过一轮本地验证：
+你可以用下面的方式手动验证流程：
 
 ```bash
-python3 ppt2reveal/scripts/extract_pptx_bundle.py test/ppt.pptx /tmp/ppt2reveal_verify_extracted
-python3 ppt2reveal/scripts/bootstrap_reveal_from_bundle.py test/extracted /tmp/ppt2reveal_verify_show_ready
+python3 ppt2slides-skill/scripts/extract_pptx_bundle.py /path/to/input.pptx /tmp/ppt2slides_skill_extracted
+python3 ppt2slides-skill/scripts/bootstrap_reveal_from_bundle.py /tmp/ppt2slides_skill_extracted /tmp/ppt2slides_skill_show_ready
 ```
-
-两条命令均已成功执行。
 
 ## 限制说明
 
@@ -217,15 +213,14 @@ python3 ppt2reveal/scripts/bootstrap_reveal_from_bundle.py test/extracted /tmp/p
 如果你准备把这个项目发到自己的 GitHub，建议仓库根目录保留：
 
 - `README.md`
-- `ppt2reveal/`
-- `test/`
+- `ppt2slides-skill/`
 
 然后执行：
 
 ```bash
 git init
 git add .
-git commit -m "Initial commit: add PPT2reveal skill"
+git commit -m "Initial commit: add PPT2slides-skill"
 git branch -M main
 git remote add origin <your-github-repo-url>
 git push -u origin main
