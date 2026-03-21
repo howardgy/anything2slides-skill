@@ -299,6 +299,7 @@
         const state = { s: 1, x: 0, y: 0 };
         let activePointerId = null;
         let didDrag = false;
+        let isClosing = false;
 
         function applyTransform() {
           lightboxImg.style.transform = `translate3d(${state.x}px, ${state.y}px, 0) scale(${state.s})`;
@@ -311,8 +312,13 @@
         }
 
         function closeLb() {
+          if (isClosing) return;
+          isClosing = true;
           cleanup();
-          lb.remove();
+          lb.classList.remove('visible');
+          window.setTimeout(() => {
+            lb.remove();
+          }, 180);
         }
 
         function zoomAt(factor) {
