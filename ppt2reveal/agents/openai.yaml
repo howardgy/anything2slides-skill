@@ -1,0 +1,4 @@
+interface:
+  display_name: "PPT to HTML"
+  short_description: "Build HTML slide decks from PPTX"
+  default_prompt: "Use $ppt2reveal to turn this PPTX into a polished HTML presentation."

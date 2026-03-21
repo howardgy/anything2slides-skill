@@ -1,0 +1,234 @@
+# PPT2reveal
+
+`PPT2reveal` 是一个面向 Codex 生态的 skill，用来把 PowerPoint `.pptx` 演示文稿转换为可编辑、可本地打开、适合演讲的 Reveal.js HTML 幻灯片。
+
+它的工作方式不是简单截图导出，而是先解析 PPTX 里的文本、备注、图片和版式几何信息，再生成一个结构尽量忠实于原稿的网页演示文档。
+
+## 这是什么
+
+这个项目包含一套可分发的 skill 和两个核心脚本：
+
+- `extract_pptx_bundle.py`：从 `.pptx` 中提取结构化内容、备注和媒体资源
+- `bootstrap_reveal_from_bundle.py`：根据提取结果生成 Reveal.js HTML 演示文稿
+
+输出结果适合以下场景：
+
+- 把现有 PPT 转成浏览器可演示版本
+- 制作可托管到网页上的内部演示 demo
+- 将 PowerPoint 内容转成便于 AI 或人工继续编辑的 HTML deck
+- 在保留原始页序和主要布局的前提下，做一版 show-ready 的 Web Slides
+
+## 核心特性
+
+- 保留原始页序，默认不擅自重排幻灯片
+- 尽量保留原始布局，使用 PPT 的几何坐标重建文本和图片位置
+- 提取 speaker notes，并生成可继续润色的备注文档
+- 自动拷贝嵌入媒体资源，生成相对路径可离线打开的 HTML
+- 默认输出 Reveal.js 风格的 show-ready 页面
+- 生成结果仍可手工编辑，适合后续继续美化或重构
+- 提供图片缩放、lightbox、设置面板等演示增强能力
+
+## 适合安装到什么工具里
+
+当前仓库原生面向 **Codex skill 系统**，推荐安装到以下环境：
+
+- Codex Desktop
+- Codex CLI
+- 任何读取 `$CODEX_HOME/skills` 或 `~/.codex/skills` 目录的 Codex 兼容环境
+
+目前仓库没有直接提供以下工具的原生插件封装：
+
+- PowerPoint 插件
+- 浏览器扩展
+- Cursor / VS Code 插件
+- ChatGPT 自定义 GPT 插件包
+
+如果你愿意，后续也可以在这个仓库基础上继续封装成别的工具形态，但当前版本首先是一个 Codex skill。
+
+## 安装方式
+
+### 方式 1：直接本地安装到 Codex
+
+假设你的 Codex skills 目录是 `~/.codex/skills`：
+
+```bash
+mkdir -p ~/.codex/skills
+cp -R /path/to/PPT2reveal/ppt2reveal ~/.codex/skills/
+```
+
+安装完成后，目录通常会变成：
+
+```text
+~/.codex/skills/ppt2reveal/
+├── SKILL.md
+├── agents/
+├── assets/
+├── references/
+└── scripts/
+```
+
+如果你的 Codex 环境需要重启或重新加载 skills，请重新打开对应工具。
+
+### 方式 2：作为 GitHub 项目拉取后安装
+
+```bash
+git clone <your-github-repo-url>
+mkdir -p ~/.codex/skills
+cp -R PPT2reveal/ppt2reveal ~/.codex/skills/
+```
+
+## 依赖要求
+
+- `python3`
+- 输入文件为 `.pptx`
+
+如果原始文件是 `.ppt`，先转成 `.pptx`，例如：
+
+```bash
+libreoffice --headless --convert-to pptx --outdir "./converted" "./input.ppt"
+```
+
+## 怎么使用
+
+### 在 Codex 中作为 skill 调用
+
+你可以直接让代理调用这个 skill，例如：
+
+```text
+用 $ppt2reveal 把这个 PPTX 转成一个可演讲的 Reveal.js HTML 演示文稿
+```
+
+适合的请求方式包括：
+
+- 把这个 PPT 转成 HTML slides
+- 保持原始结构，做一个网页版演示
+- 把这个 deck 转成 Reveal.js
+- 输出一个本地可打开、可编辑的 HTML presentation
+
+### 手动运行脚本
+
+1. 提取 PPTX bundle
+
+```bash
+python3 /path/to/ppt2reveal/scripts/extract_pptx_bundle.py \
+  /path/to/input.pptx \
+  /path/to/work/extracted
+```
+
+这一步会生成：
+
+- `manifest.json`
+- `slides_outline.md`
+- `media/`
+
+2. 生成 Reveal.js HTML deck
+
+```bash
+python3 /path/to/ppt2reveal/scripts/bootstrap_reveal_from_bundle.py \
+  /path/to/work/extracted \
+  /path/to/work/show_ready
+```
+
+这一步会生成：
+
+- `show_ready/index.html`
+- `show_ready/speaker_notes.md`
+- `show_ready/assets/css/style.css`
+- `show_ready/assets/media/`
+
+## 输出目录说明
+
+### 提取阶段输出
+
+```text
+extracted/
+├── manifest.json
+├── slides_outline.md
+└── media/
+```
+
+### 生成阶段输出
+
+```text
+show_ready/
+├── index.html
+├── speaker_notes.md
+└── assets/
+    ├── css/
+    └── media/
+```
+
+## 工作流程
+
+1. 从 `.pptx` 提取文字、备注、图片和几何布局信息
+2. 生成结构化 `manifest.json`
+3. 根据布局和媒体信息生成 HTML 幻灯片
+4. 保留原始 slide count 和大体排版
+5. 输出可继续手工编辑的 Reveal.js deck 和 speaker notes
+
+## 项目结构
+
+```text
+PPT2reveal/
+├── ppt2reveal/
+│   ├── SKILL.md
+│   ├── agents/openai.yaml
+│   ├── assets/
+│   ├── references/
+│   └── scripts/
+└── test/
+```
+
+其中：
+
+- `ppt2reveal/SKILL.md`：skill 主说明和使用规则
+- `ppt2reveal/agents/openai.yaml`：代理展示配置
+- `ppt2reveal/assets/`：HTML 模板、CSS、speaker notes 模板
+- `ppt2reveal/references/output_contract.md`：提取结果字段说明
+- `ppt2reveal/scripts/`：两个核心脚本
+- `test/`：示例 PPT 与生成样例
+
+## 已验证的本地命令
+
+仓库内当前示例已经过一轮本地验证：
+
+```bash
+python3 ppt2reveal/scripts/extract_pptx_bundle.py test/ppt.pptx /tmp/ppt2reveal_verify_extracted
+python3 ppt2reveal/scripts/bootstrap_reveal_from_bundle.py test/extracted /tmp/ppt2reveal_verify_show_ready
+```
+
+两条命令均已成功执行。
+
+## 限制说明
+
+当前版本优先保证“稳健提取 + 可编辑重建”，不是 PowerPoint 的像素级完全复刻。以下内容可能需要人工复核：
+
+- SmartArt 语义
+- 图表数据重建
+- 动画和切换效果
+- 复杂分组对象
+- 主题字体继承
+- 视频播放相关元数据
+
+如果原始 PPT 对这些效果依赖很重，建议把生成的 HTML 作为初稿，再做人工微调。
+
+## 上传到 GitHub 的推荐做法
+
+如果你准备把这个项目发到自己的 GitHub，建议仓库根目录保留：
+
+- `README.md`
+- `ppt2reveal/`
+- `test/`
+
+然后执行：
+
+```bash
+git init
+git add .
+git commit -m "Initial commit: add PPT2reveal skill"
+git branch -M main
+git remote add origin <your-github-repo-url>
+git push -u origin main
+```
+
+如果你想让我继续帮你把远端也连好并直接 push，我可以接着做这一步。

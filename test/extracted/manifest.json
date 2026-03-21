@@ -1,0 +1,876 @@
+{
+  "source_file": "/Users/howardgz/Projects/PPT2reveal/test/ppt.pptx",
+  "presentation_size": {
+    "cx": 9144000,
+    "cy": 6858000
+  },
+  "slide_count": 19,
+  "slides": [
+    {
+      "number": 1,
+      "path": "ppt/slides/slide1.xml",
+      "title": "广一麻醉",
+      "notes": "",
+      "text_blocks": [
+        {
+          "shape_id": 2,
+          "name": "标题 1",
+          "placeholder": "ctrTitle",
+          "text": "广一麻醉",
+          "paragraphs": [
+            "广一麻醉"
+          ],
+          "geometry": {
+            "x": 4489939,
+            "y": 1992923,
+            "cx": 4419600,
+            "cy": 1477107
+          }
+        },
+        {
+          "shape_id": 3,
+          "name": "副标题 2",
+          "placeholder": "subTitle",
+          "text": "微信\n小程序？",
+          "paragraphs": [
+            "微信",
+            "小程序？"
+          ],
+          "geometry": {
+            "x": 4595446,
+            "y": 3625485,
+            "cx": 4191000,
+            "cy": 1685068
+          }
+        },
+        {
+          "shape_id": 6,
+          "name": "副标题 2",
+          "placeholder": "",
+          "text": "如何使用",
+          "paragraphs": [
+            "如何使用"
+          ],
+          "geometry": {
+            "x": 4548554,
+            "y": 1418493,
+            "cx": 4191000,
+            "cy": 527539
+          }
+        }
+      ],
+      "media": [
+        {
+          "shape_id": 5,
+          "name": "图片 4",
+          "source": "ppt/media/image1.PNG",
+          "output_rel": "media/image1.PNG",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "path": "ppt/slides/slide2.xml",
+      "title": "一、入口",
+      "notes": "",
+      "text_blocks": [
+        {
+          "shape_id": 2,
+          "name": "标题 1",
+          "placeholder": "ctrTitle",
+          "text": "一、入口",
+          "paragraphs": [
+            "一、入口"
+          ],
+          "geometry": {
+            "x": 4261339,
+            "y": 375138,
+            "cx": 4419600,
+            "cy": 597877
+          }
+        },
+        {
+          "shape_id": 8,
+          "name": "标题 1",
+          "placeholder": "",
+          "text": "或",
+          "paragraphs": [
+            "或"
+          ],
+          "geometry": {
+            "x": 6210301,
+            "y": 4794738,
+            "cx": 635976,
+            "cy": 509954
+          }
+        },
+        {
+          "shape_id": 9,
+          "name": "标题 1",
+          "placeholder": "",
+          "text": "发现 —— 小程序 —— 搜索“广一麻醉”",
+          "paragraphs": [
+            "发现 —— 小程序 —— 搜索“广一麻醉”"
+          ],
+          "geometry": {
+            "x": 4273061,
+            "y": 5462953,
+            "cx": 4530969,
+            "cy": 509954
+          }
+        }
+      ],
+      "media": [
+        {
+          "shape_id": 6,
+          "name": "图片 5",
+          "source": "ppt/media/image2.PNG",
+          "output_rel": "media/image2.PNG",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        },
+        {
+          "shape_id": 7,
+          "name": "图片 6",
+          "source": "ppt/media/image3.jpeg",
+          "output_rel": "media/image3.jpeg",
+          "geometry": {
+            "x": 4832839,
+            "y": 1333500,
+            "cx": 3276600,
+            "cy": 3276600
+          }
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "path": "ppt/slides/slide3.xml",
+      "title": "Slide 3",
+      "notes": "",
+      "text_blocks": [],
+      "media": [
+        {
+          "shape_id": 5,
+          "name": "图片 4",
+          "source": "ppt/media/image4.PNG",
+          "output_rel": "media/image4.PNG",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        },
+        {
+          "shape_id": 4,
+          "name": "图片 3",
+          "source": "ppt/media/image5.PNG",
+          "output_rel": "media/image5.PNG",
+          "geometry": {
+            "x": 5141546,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "path": "ppt/slides/slide4.xml",
+      "title": "二、申请认证",
+      "notes": "",
+      "text_blocks": [
+        {
+          "shape_id": 6,
+          "name": "标题 1",
+          "placeholder": "ctrTitle",
+          "text": "二、申请认证",
+          "paragraphs": [
+            "二、申请认证"
+          ],
+          "geometry": {
+            "x": 4261339,
+            "y": 375138,
+            "cx": 4419600,
+            "cy": 597877
+          }
+        },
+        {
+          "shape_id": 3,
+          "name": "文本框 2",
+          "placeholder": "",
+          "text": "选择不同的身份将需要输入不同的信息。\n采集信息能建立我科人员信息库，区分软件内的信息查看权限等。\n人工审核。\n带星号为必填。\n可跳过此步，稍后再填写。",
+          "paragraphs": [
+            "选择不同的身份将需要输入不同的信息。",
+            "采集信息能建立我科人员信息库，区分软件内的信息查看权限等。",
+            "人工审核。",
+            "带星号为必填。",
+            "可跳过此步，稍后再填写。"
+          ],
+          "geometry": {
+            "x": 4261339,
+            "y": 1301261,
+            "cx": 4419600,
+            "cy": 4467826
+          }
+        }
+      ],
+      "media": [
+        {
+          "shape_id": 2,
+          "name": "图片 1",
+          "source": "ppt/media/image6.PNG",
+          "output_rel": "media/image6.PNG",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "path": "ppt/slides/slide5.xml",
+      "title": "二、申请认证",
+      "notes": "",
+      "text_blocks": [
+        {
+          "shape_id": 6,
+          "name": "标题 1",
+          "placeholder": "ctrTitle",
+          "text": "二、申请认证",
+          "paragraphs": [
+            "二、申请认证"
+          ],
+          "geometry": {
+            "x": 4261339,
+            "y": 375138,
+            "cx": 4419600,
+            "cy": 597877
+          }
+        },
+        {
+          "shape_id": 3,
+          "name": "文本框 2",
+          "placeholder": "",
+          "text": "选择不同的身份将需要输入不同的信息。\n采集信息能建立我科人员信息库，区分软件内的信息查看权限等。\n人工审核。\n带星号为必填。\n可跳过此步，稍后再填写。",
+          "paragraphs": [
+            "选择不同的身份将需要输入不同的信息。",
+            "采集信息能建立我科人员信息库，区分软件内的信息查看权限等。",
+            "人工审核。",
+            "带星号为必填。",
+            "可跳过此步，稍后再填写。"
+          ],
+          "geometry": {
+            "x": 4261339,
+            "y": 1301261,
+            "cx": 4419600,
+            "cy": 4467826
+          }
+        }
+      ],
+      "media": [
+        {
+          "shape_id": 4,
+          "name": "图片 3",
+          "source": "ppt/media/image7.PNG",
+          "output_rel": "media/image7.PNG",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "path": "ppt/slides/slide6.xml",
+      "title": "Slide 6",
+      "notes": "",
+      "text_blocks": [],
+      "media": [
+        {
+          "shape_id": 3,
+          "name": "图片 2",
+          "source": "ppt/media/image8.PNG",
+          "output_rel": "media/image8.PNG",
+          "geometry": {
+            "x": 5141546,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        },
+        {
+          "shape_id": 2,
+          "name": "图片 1",
+          "source": "ppt/media/image9.png",
+          "output_rel": "media/image9.png",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "path": "ppt/slides/slide7.xml",
+      "title": "Slide 7",
+      "notes": "",
+      "text_blocks": [],
+      "media": [
+        {
+          "shape_id": 5,
+          "name": "图片 4",
+          "source": "ppt/media/image1.PNG",
+          "output_rel": "media/image1.PNG",
+          "geometry": {
+            "x": 5141546,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        },
+        {
+          "shape_id": 4,
+          "name": "图片 3",
+          "source": "ppt/media/image10.png",
+          "output_rel": "media/image10.png",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "path": "ppt/slides/slide8.xml",
+      "title": "二、签到",
+      "notes": "",
+      "text_blocks": [
+        {
+          "shape_id": 6,
+          "name": "标题 1",
+          "placeholder": "ctrTitle",
+          "text": "二、签到",
+          "paragraphs": [
+            "二、签到"
+          ],
+          "geometry": {
+            "x": 4261339,
+            "y": 375138,
+            "cx": 4419600,
+            "cy": 597877
+          }
+        },
+        {
+          "shape_id": 3,
+          "name": "文本框 2",
+          "placeholder": "",
+          "text": "能自动读取认证后的信息。\n会记录地理位置。",
+          "paragraphs": [
+            "能自动读取认证后的信息。",
+            "会记录地理位置。"
+          ],
+          "geometry": {
+            "x": 4261339,
+            "y": 1301261,
+            "cx": 4419600,
+            "cy": 1754326
+          }
+        }
+      ],
+      "media": [
+        {
+          "shape_id": 8,
+          "name": "图片 7",
+          "source": "ppt/media/image1.PNG",
+          "output_rel": "media/image1.PNG",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "path": "ppt/slides/slide9.xml",
+      "title": "Slide 9",
+      "notes": "",
+      "text_blocks": [],
+      "media": [
+        {
+          "shape_id": 3,
+          "name": "图片 2",
+          "source": "ppt/media/image11.png",
+          "output_rel": "media/image11.png",
+          "geometry": {
+            "x": 5141546,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        },
+        {
+          "shape_id": 2,
+          "name": "图片 1",
+          "source": "ppt/media/image12.PNG",
+          "output_rel": "media/image12.PNG",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "path": "ppt/slides/slide10.xml",
+      "title": "Slide 10",
+      "notes": "",
+      "text_blocks": [],
+      "media": [
+        {
+          "shape_id": 2,
+          "name": "图片 1",
+          "source": "ppt/media/image12.PNG",
+          "output_rel": "media/image12.PNG",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        },
+        {
+          "shape_id": 4,
+          "name": "图片 3",
+          "source": "ppt/media/image13.PNG",
+          "output_rel": "media/image13.PNG",
+          "geometry": {
+            "x": 4332652,
+            "y": 1090245,
+            "cx": 4330879,
+            "cy": 4232032
+          }
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "path": "ppt/slides/slide11.xml",
+      "title": "Slide 11",
+      "notes": "",
+      "text_blocks": [],
+      "media": [
+        {
+          "shape_id": 5,
+          "name": "图片 4",
+          "source": "ppt/media/image14.PNG",
+          "output_rel": "media/image14.PNG",
+          "geometry": {
+            "x": 5141546,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        },
+        {
+          "shape_id": 4,
+          "name": "图片 3",
+          "source": "ppt/media/image15.PNG",
+          "output_rel": "media/image15.PNG",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "path": "ppt/slides/slide12.xml",
+      "title": "Slide 12",
+      "notes": "",
+      "text_blocks": [],
+      "media": [
+        {
+          "shape_id": 2,
+          "name": "图片 1",
+          "source": "ppt/media/image16.png",
+          "output_rel": "media/image16.png",
+          "geometry": {
+            "x": 3066561,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "path": "ppt/slides/slide13.xml",
+      "title": "Slide 13",
+      "notes": "",
+      "text_blocks": [],
+      "media": [
+        {
+          "shape_id": 3,
+          "name": "图片 2",
+          "source": "ppt/media/image11.png",
+          "output_rel": "media/image11.png",
+          "geometry": {
+            "x": 5141546,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        },
+        {
+          "shape_id": 7,
+          "name": "图片 6",
+          "source": "ppt/media/image2.PNG",
+          "output_rel": "media/image2.PNG",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "path": "ppt/slides/slide14.xml",
+      "title": "试一试",
+      "notes": "",
+      "text_blocks": [
+        {
+          "shape_id": 10,
+          "name": "文本框 9",
+          "placeholder": "",
+          "text": "试一试",
+          "paragraphs": [
+            "试一试"
+          ],
+          "geometry": {
+            "x": 493346,
+            "y": 2567352,
+            "cx": 1881554,
+            "cy": 921471
+          }
+        }
+      ],
+      "media": [
+        {
+          "shape_id": 2,
+          "name": "图片 1",
+          "source": "ppt/media/image17.PNG",
+          "output_rel": "media/image17.PNG",
+          "geometry": {
+            "x": 2374900,
+            "y": 398585,
+            "cx": 6100884,
+            "cy": 5939057
+          }
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "path": "ppt/slides/slide15.xml",
+      "title": "三、置顶小程序",
+      "notes": "",
+      "text_blocks": [
+        {
+          "shape_id": 6,
+          "name": "标题 1",
+          "placeholder": "ctrTitle",
+          "text": "三、置顶小程序",
+          "paragraphs": [
+            "三、置顶小程序"
+          ],
+          "geometry": {
+            "x": 4261339,
+            "y": 375138,
+            "cx": 4419600,
+            "cy": 597877
+          }
+        },
+        {
+          "shape_id": 3,
+          "name": "文本框 2",
+          "placeholder": "",
+          "text": "防止找不到入口。",
+          "paragraphs": [
+            "防止找不到入口。"
+          ],
+          "geometry": {
+            "x": 4261339,
+            "y": 1301261,
+            "cx": 4419600,
+            "cy": 589072
+          }
+        }
+      ],
+      "media": [
+        {
+          "shape_id": 2,
+          "name": "图片 1",
+          "source": "ppt/media/image18.PNG",
+          "output_rel": "media/image18.PNG",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "path": "ppt/slides/slide16.xml",
+      "title": "三、置顶小程序",
+      "notes": "",
+      "text_blocks": [
+        {
+          "shape_id": 6,
+          "name": "标题 1",
+          "placeholder": "ctrTitle",
+          "text": "三、置顶小程序",
+          "paragraphs": [
+            "三、置顶小程序"
+          ],
+          "geometry": {
+            "x": 4261339,
+            "y": 375138,
+            "cx": 4419600,
+            "cy": 597877
+          }
+        },
+        {
+          "shape_id": 3,
+          "name": "文本框 2",
+          "placeholder": "",
+          "text": "防止找不到入口。",
+          "paragraphs": [
+            "防止找不到入口。"
+          ],
+          "geometry": {
+            "x": 4261339,
+            "y": 1301261,
+            "cx": 4419600,
+            "cy": 589072
+          }
+        }
+      ],
+      "media": [
+        {
+          "shape_id": 8,
+          "name": "图片 7",
+          "source": "ppt/media/image19.PNG",
+          "output_rel": "media/image19.PNG",
+          "geometry": {
+            "x": 639884,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "path": "ppt/slides/slide17.xml",
+      "title": "四、其他功能",
+      "notes": "",
+      "text_blocks": [
+        {
+          "shape_id": 6,
+          "name": "标题 1",
+          "placeholder": "ctrTitle",
+          "text": "四、其他功能",
+          "paragraphs": [
+            "四、其他功能"
+          ],
+          "geometry": {
+            "x": 533400,
+            "y": 433753,
+            "cx": 4419600,
+            "cy": 597877
+          }
+        },
+        {
+          "shape_id": 3,
+          "name": "文本框 2",
+          "placeholder": "",
+          "text": "教学评价\n公分计算器",
+          "paragraphs": [
+            "教学评价",
+            "公分计算器"
+          ],
+          "geometry": {
+            "x": 808892,
+            "y": 1359876,
+            "cx": 4144108,
+            "cy": 1200329
+          }
+        },
+        {
+          "shape_id": 2,
+          "name": "文本框 1",
+          "placeholder": "",
+          "text": "……",
+          "paragraphs": [
+            "……"
+          ],
+          "geometry": {
+            "x": 1553179,
+            "y": 2888451,
+            "cx": 861774,
+            "cy": 871392
+          }
+        }
+      ],
+      "media": [
+        {
+          "shape_id": 4,
+          "name": "图片 3",
+          "source": "ppt/media/image20.png",
+          "output_rel": "media/image20.png",
+          "geometry": {
+            "x": 5141546,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        },
+        {
+          "shape_id": 5,
+          "name": "图片 4",
+          "source": "ppt/media/image21.png",
+          "output_rel": "media/image21.png",
+          "geometry": {
+            "x": 5141546,
+            "y": 0,
+            "cx": 3167180,
+            "cy": 6858000
+          }
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "path": "ppt/slides/slide18.xml",
+      "title": "Thank you!",
+      "notes": "",
+      "text_blocks": [
+        {
+          "shape_id": 3,
+          "name": "内容占位符 2",
+          "placeholder": "",
+          "text": "Thank you!",
+          "paragraphs": [
+            "Thank you!"
+          ],
+          "geometry": {
+            "x": 628650,
+            "y": 2309445,
+            "cx": 7886700,
+            "cy": 1629509
+          }
+        }
+      ],
+      "media": []
+    },
+    {
+      "number": 19,
+      "path": "ppt/slides/slide19.xml",
+      "title": "Slide 19",
+      "notes": "",
+      "text_blocks": [],
+      "media": [
+        {
+          "shape_id": 4,
+          "name": "图片 3",
+          "source": "ppt/media/image13.PNG",
+          "output_rel": "media/image13.PNG",
+          "geometry": {
+            "x": 792284,
+            "y": 246186,
+            "cx": 3167180,
+            "cy": 3118338
+          }
+        },
+        {
+          "shape_id": 5,
+          "name": "图片 4",
+          "source": "ppt/media/image17.PNG",
+          "output_rel": "media/image17.PNG",
+          "geometry": {
+            "x": 5317393,
+            "y": 246186,
+            "cx": 3167180,
+            "cy": 3118338
+          }
+        },
+        {
+          "shape_id": 6,
+          "name": "图片 5",
+          "source": "ppt/media/image22.PNG",
+          "output_rel": "media/image22.PNG",
+          "geometry": {
+            "x": 792284,
+            "y": 3622431,
+            "cx": 3167180,
+            "cy": 2942493
+          }
+        },
+        {
+          "shape_id": 7,
+          "name": "图片 6",
+          "source": "ppt/media/image23.PNG",
+          "output_rel": "media/image23.PNG",
+          "geometry": {
+            "x": 5317393,
+            "y": 3622430,
+            "cx": 3167180,
+            "cy": 2942493
+          }
+        }
+      ]
+    }
+  ]
+}
