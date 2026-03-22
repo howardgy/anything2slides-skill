@@ -22,27 +22,25 @@
 
 ## 安装方式
 
-### 方式 1：属于一下命令
+### 方式 1：输入以下命令
 ```
-帮我安装skill <your-github-repo-url>
+帮我安装skill https://github.com/howardgy/anything2slides-skill/
 ```
 
 ### 方式 2：作为 GitHub 项目拉取后安装
 
 ```bash
-git clone <your-github-repo-url>
-mkdir -p ~/.codex/skills
-cp -R anything2slides-skill/anything2slides-skill ~/.codex/skills/
+cd <你的项目文件夹>
+git clone https://github.com/howardgy/anything2slides-skill/
+cp -R anything2slides-skill/anything2slides-skill ~/<你的工具，例如~/.codex>/skills/
 ```
 
 
 
 ## 怎么使用
 
-
 ### Python 环境安装
-
-因此推荐先进入 skill 目录，再通过 `requirements.txt` 安装运行时依赖：
+先进入 skill 目录，通过 `requirements.txt` 安装运行时依赖：
 
 ```bash
 cd anything2slides-skill
@@ -58,7 +56,7 @@ python3 -m pip install -r requirements.txt
 你可以直接让代理调用这个 skill，例如：
 
 ```text
-把这个源材料转成一个slide
+把这个ppt文件转成一个slide
 ```
 
 ## 输出目录说明

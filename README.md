@@ -2,82 +2,59 @@
 
 [中文](README.zh-CN.md) | [English](README.en.md)
 
-`anything2slides-skill` is a reusable skill package for turning multiple source formats into editable, locally runnable Reveal.js HTML presentations.
+`anything2slides-skill` is a standard-structured general-purpose skill for converting multiple kinds of source material into editable, locally runnable, presentation-ready Reveal.js HTML slides.
 
-This project references and extends workflow ideas from [inhyeoklee/paper2slides-skill](https://github.com/inhyeoklee/paper2slides-skill), especially for the `paper2slides`-style document workflow: extract first, understand second, then organize the final talk structure.
+For non-PPT document-to-slides workflows, this project references and extends ideas from [inhyeoklee/paper2slides-skill](https://github.com/inhyeoklee/paper2slides-skill), especially the `paper2slides`-style flow of extract first, understand next, then organize the presentation narrative.
 
 It has two operating modes:
 
-- For `ppt` / `pptx`: rebuild the original deck as HTML while preserving slide order and the main layout
-- For `pdf` / `text` / `html` / `md` / `docx`: extract text and visuals first, then design the presentation structure and generate the final HTML deck
+- For `ppt` / `pptx`: rebuild the web version by following the original slide order and major layout of the source PPT
+- For `pdf` / `text` / `html` / `md` / `docx`: follow a `paper2slides`-inspired process, extracting text and images first, then deciding the presentation structure before generating the final HTML deck
 
 ## Good Fits
 
 - Convert an existing PPT into a browser-presentable version
 - Turn PDF, Markdown, Word, or HTML content into show-ready slides
-- Produce an internal presentation demo for web hosting
-- Convert document content into an HTML deck that AI or humans can keep editing
-- Rebuild a PPT as web slides while keeping the original order and major layout
+- Produce internal presentation demos that can be hosted on the web
+- Convert document content into an HTML deck that AI or humans can continue editing
+- Rebuild a PPT as show-ready web slides while keeping the original slide order and major layout
 
 ## Installation
 
-### Option 1: ask your coding tool to install the skill
+### Option 1: type this command
 
 ```text
-Help me install the skill <your-github-repo-url>
+Help me install the skill https://github.com/howardgy/anything2slides-skill/
 ```
 
-### Option 2: clone from GitHub and install manually
+### Option 2: clone it as a GitHub project and install it
 
 ```bash
-git clone <your-github-repo-url>
-mkdir -p ~/.codex/skills
-cp -R anything2slides-skill/anything2slides-skill ~/.codex/skills/
+cd <your project folder>
+git clone https://github.com/howardgy/anything2slides-skill/
+cp -R anything2slides-skill/anything2slides-skill ~/<your tool path, for example ~/.codex>/skills/
 ```
 
 ## Usage
 
 ### Python setup
 
-Change into the skill directory and install the runtime dependencies from `requirements.txt`:
+First enter the skill directory and install the runtime dependencies from `requirements.txt`:
 
 ```bash
 cd anything2slides-skill
 python3 -m pip install -r requirements.txt
 ```
 
-Requirement:
-
+Requirements:
 - Python 3.9 or newer
 
-### Ask the skill to run
+### Call it as a skill
 
-You can call the skill with natural language, for example:
+You can directly ask the agent to use this skill, for example:
 
 ```text
-Turn this source material into a slide deck.
-```
-
-### Example prompts for coding tools
-
-- Codex Desktop / Codex CLI: `Please use the local skill at ./anything2slides-skill for file-to-Reveal conversion.`
-- Claude Code: `Use the local skill in ./anything2slides-skill to turn source files into Reveal.js slides.`
-- OpenClaw or similar tools: `Install the skill from ./anything2slides-skill and use it for document and PPT to Reveal.js conversion.`
-
-### Example natural-language requests
-
-- `Use $anything2slides-skill to convert ./examples/review.pdf into a Reveal.js deck in ./out/review-html`
-- `Use $anything2slides-skill to turn ./notes/status.md into slides in ./out/status-slides`
-- `Use $anything2slides-skill to convert ./deck/source.pptx into HTML slides in ./out/source-html`
-
-### Run the script directly
-
-From the repository root:
-
-```bash
-python3 anything2slides-skill/scripts/anything2slides.py \
-  ./path/to/input \
-  ./out/show_ready
+Turn this PPT file into slides.
 ```
 
 ## Output Layout
@@ -111,4 +88,4 @@ show_ready/
     └── media/
 ```
 
-In practice, the generated HTML will usually appear at `show_ready/index.html` inside the output folder you provided.
+That means the generated HTML will usually appear at `show_ready/index.html` inside the output directory you specified.
