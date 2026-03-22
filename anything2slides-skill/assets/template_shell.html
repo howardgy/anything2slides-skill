@@ -120,7 +120,7 @@
     });
 
     (function () {
-      const KEY = 'ppt2slides_skill_settings';
+      const KEY = 'anything2slides_skill_settings';
       const FONTS = {
         manrope: "'Manrope', 'Avenir Next', sans-serif",
         serif: "'Source Serif 4', Georgia, serif",
@@ -225,7 +225,7 @@
       el('btn-reset').addEventListener('click', () => {
         s = { ...defaults };
         apply(s);
-        localStorage.removeItem('ppt2slides_skill_figs');
+        localStorage.removeItem('anything2slides_skill_figs');
         document.querySelectorAll('.figure-frame img').forEach(img => {
           img.style.transform = '';
         });

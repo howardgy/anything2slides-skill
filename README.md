@@ -1,6 +1,6 @@
-# anything2slides
+# anything2slides-skill
 
-`anything2slides` 是一个符合标准目录结构的通用 skill，用来把多种源材料转换为可编辑、可本地打开、适合演讲的 Reveal.js HTML 幻灯片。
+`anything2slides-skill` 是一个符合标准目录结构的通用 skill，用来把多种源材料转换为可编辑、可本地打开、适合演讲的 Reveal.js HTML 幻灯片。
 
 它有两种工作模式：
 
@@ -68,19 +68,19 @@
 
 ### 方式 1：安装到兼容 skill 目录的环境
 
-把 `anything2slides/` 这个目录复制到你的 skill 搜索目录即可。
+把 `anything2slides-skill/` 这个目录复制到你的 skill 搜索目录即可。
 
 例如在 Codex 类环境里，常见目录是 `~/.codex/skills`：
 
 ```bash
 mkdir -p ~/.codex/skills
-cp -R /path/to/anything2slides/anything2slides ~/.codex/skills/
+cp -R /path/to/anything2slides-skill/anything2slides-skill ~/.codex/skills/
 ```
 
 安装完成后，目录通常会变成：
 
 ```text
-~/.codex/skills/anything2slides/
+~/.codex/skills/anything2slides-skill/
 ├── SKILL.md
 ├── agents/
 ├── assets/
@@ -95,7 +95,7 @@ cp -R /path/to/anything2slides/anything2slides ~/.codex/skills/
 ```bash
 git clone <your-github-repo-url>
 mkdir -p ~/.codex/skills
-cp -R anything2slides/anything2slides ~/.codex/skills/
+cp -R anything2slides-skill/anything2slides-skill ~/.codex/skills/
 ```
 
 ## 依赖要求
@@ -117,7 +117,7 @@ libreoffice --headless --convert-to pptx --outdir "./converted" "./input.ppt"
 你可以直接让代理调用这个 skill，例如：
 
 ```text
-用 $anything2slides 把这个源材料转成一个可演讲的 Reveal.js HTML 演示文稿
+用 $anything2slides-skill 把这个源材料转成一个可演讲的 Reveal.js HTML 演示文稿
 ```
 
 适合的请求方式包括：
@@ -133,7 +133,7 @@ libreoffice --headless --convert-to pptx --outdir "./converted" "./input.ppt"
 推荐优先使用统一入口：
 
 ```bash
-python3 /path/to/anything2slides/scripts/anything2slides.py \
+python3 /path/to/anything2slides-skill/scripts/anything2slides.py \
   /path/to/input \
   /path/to/work/show_ready
 ```
@@ -150,7 +150,7 @@ python3 /path/to/anything2slides/scripts/anything2slides.py \
 1. 提取 PPTX bundle
 
 ```bash
-python3 /path/to/anything2slides/scripts/extract_pptx_bundle.py \
+python3 /path/to/anything2slides-skill/scripts/extract_pptx_bundle.py \
   /path/to/input.pptx \
   /path/to/work/extracted
 ```
@@ -164,7 +164,7 @@ python3 /path/to/anything2slides/scripts/extract_pptx_bundle.py \
 2. 生成 Reveal.js HTML deck
 
 ```bash
-python3 /path/to/anything2slides/scripts/bootstrap_reveal_from_bundle.py \
+python3 /path/to/anything2slides-skill/scripts/bootstrap_reveal_from_bundle.py \
   /path/to/work/extracted \
   /path/to/work/show_ready
 ```
@@ -181,7 +181,7 @@ python3 /path/to/anything2slides/scripts/bootstrap_reveal_from_bundle.py \
 1. 提取文档 bundle
 
 ```bash
-python3 /path/to/anything2slides/scripts/extract_document_bundle.py \
+python3 /path/to/anything2slides-skill/scripts/extract_document_bundle.py \
   /path/to/input.pdf \
   /path/to/work/document_bundle
 ```
@@ -195,7 +195,7 @@ python3 /path/to/anything2slides/scripts/extract_document_bundle.py \
 2. 生成 Reveal.js HTML deck
 
 ```bash
-python3 /path/to/anything2slides/scripts/bootstrap_reveal_from_document_bundle.py \
+python3 /path/to/anything2slides-skill/scripts/bootstrap_reveal_from_document_bundle.py \
   /path/to/work/document_bundle \
   /path/to/work/show_ready
 ```
@@ -259,8 +259,8 @@ show_ready/
 ## 项目结构
 
 ```text
-anything2slides/
-├── anything2slides/
+anything2slides-skill/
+├── anything2slides-skill/
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   ├── assets/
@@ -270,19 +270,19 @@ anything2slides/
 
 其中：
 
-- `anything2slides/SKILL.md`：skill 主说明和使用规则
-- `anything2slides/agents/openai.yaml`：代理展示配置
-- `anything2slides/assets/`：HTML 模板、CSS、speaker notes 模板
-- `anything2slides/references/output_contract.md`：提取结果字段说明
-- `anything2slides/scripts/`：统一入口 + PPT/PPTX + 文档型源核心脚本
+- `anything2slides-skill/SKILL.md`：skill 主说明和使用规则
+- `anything2slides-skill/agents/openai.yaml`：代理展示配置
+- `anything2slides-skill/assets/`：HTML 模板、CSS、speaker notes 模板
+- `anything2slides-skill/references/output_contract.md`：提取结果字段说明
+- `anything2slides-skill/scripts/`：统一入口 + PPT/PPTX + 文档型源核心脚本
 
 ## 命令示例
 
 你可以用下面的方式手动验证流程：
 
 ```bash
-python3 anything2slides/scripts/extract_pptx_bundle.py /path/to/input.pptx /tmp/anything2slides_extracted
-python3 anything2slides/scripts/bootstrap_reveal_from_bundle.py /tmp/anything2slides_extracted /tmp/anything2slides_show_ready
+python3 anything2slides-skill/scripts/extract_pptx_bundle.py /path/to/input.pptx /tmp/anything2slides_extracted
+python3 anything2slides-skill/scripts/bootstrap_reveal_from_bundle.py /tmp/anything2slides_extracted /tmp/anything2slides_show_ready
 ```
 
 ## 限制说明
@@ -303,14 +303,14 @@ python3 anything2slides/scripts/bootstrap_reveal_from_bundle.py /tmp/anything2sl
 如果你准备把这个项目发到自己的 GitHub，建议仓库根目录保留：
 
 - `README.md`
-- `anything2slides/`
+- `anything2slides-skill/`
 
 然后执行：
 
 ```bash
 git init
 git add .
-git commit -m "Initial commit: add anything2slides"
+git commit -m "Initial commit: add anything2slides-skill"
 git branch -M main
 git remote add origin <your-github-repo-url>
 git push -u origin main

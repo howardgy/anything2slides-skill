@@ -1,4 +1,0 @@
-interface:
-  display_name: "Anything2slides"
-  short_description: "Turn files into HTML slide decks"
-  default_prompt: "Use $anything2slides to turn this source material into a polished HTML presentation."

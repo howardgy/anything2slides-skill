@@ -1,9 +1,9 @@
 ---
-name: anything2slides
+name: anything2slides-skill
 description: "Turn source materials into a polished HTML presentation. For `.ppt` or `.pptx`, preserve the original slide count and layout as closely as possible. For `.pdf`, `.txt`, `.text`, `.html`, `.md`, or `.docx`, extract text and visuals into a structured bundle, then follow a paper2slides-style workflow to design and generate a show-ready HTML deck."
 ---
 
-# anything2slides
+# anything2slides-skill
 
 ## Overview
 
