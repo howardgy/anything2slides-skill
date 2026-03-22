@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import io
 import json
 import re
 import shutil
@@ -20,6 +21,16 @@ try:
     import fitz  # type: ignore
 except ImportError:  # pragma: no cover - optional dependency in runtime only
     fitz = None
+
+try:
+    import numpy as np  # type: ignore
+except ImportError:  # pragma: no cover - optional dependency in runtime only
+    np = None
+
+try:
+    from PIL import Image  # type: ignore
+except ImportError:  # pragma: no cover - optional dependency in runtime only
+    Image = None
 
 
 W_NS = {
@@ -657,10 +668,32 @@ def parse_txt(source_path: Path) -> Tuple[str, List[Dict[str, object]], List[Dic
     return title, sections, []
 
 
+def ensure_pdf_dependencies() -> None:
+    missing: List[str] = []
+    if fitz is None:
+        missing.append("PyMuPDF")
+    if np is None:
+        missing.append("numpy")
+    if Image is None:
+        missing.append("Pillow")
+    if missing:
+        raise SystemExit(
+            "PDF support requires the following Python packages to be installed: "
+            + ", ".join(missing)
+        )
+
+
 def extract_pdf_title(doc: "fitz.Document", fallback: str) -> str:
-    candidates: List[Tuple[float, str]] = []
     if not doc.page_count:
         return fallback
+
+    first_page_text = doc[0].get_text("text")
+    lines = [line.strip() for line in first_page_text.splitlines() if line.strip()]
+    for line in lines:
+        if len(line) > 20 and not line.startswith("http"):
+            return line
+
+    candidates: List[Tuple[float, str]] = []
     page = doc[0]
     page_dict = page.get_text("dict")
     for block in page_dict.get("blocks", []):
@@ -683,42 +716,203 @@ def extract_pdf_title(doc: "fitz.Document", fallback: str) -> str:
     return candidates[0][1]
 
 
+def cluster_pdf_image_rects(page: "fitz.Page") -> List["fitz.Rect"]:
+    img_info_list = page.get_image_info(hashes=False)
+    if not img_info_list:
+        return []
+
+    rects = [fitz.Rect(info["bbox"]) for info in img_info_list if info.get("bbox")]
+    clusters: List["fitz.Rect"] = []
+    for rect in rects:
+        merged = False
+        for index, cluster in enumerate(clusters):
+            if rect.distance_to(cluster) < 60:
+                clusters[index] = cluster | rect
+                merged = True
+                break
+        if not merged:
+            clusters.append(rect)
+    return clusters
+
+
+def pil_to_gray_array(img: "Image.Image") -> "np.ndarray":
+    return np.array(img.convert("L"))
+
+
+def row_projection(gray: "np.ndarray", threshold: int = 240) -> "np.ndarray":
+    return np.sum(gray < threshold, axis=1)
+
+
+def col_projection(gray: "np.ndarray", threshold: int = 240) -> "np.ndarray":
+    return np.sum(gray < threshold, axis=0)
+
+
+def find_projection_gaps(
+    projection: "np.ndarray", min_gap: int = 8, max_content: int = 10
+) -> List[Tuple[int, int]]:
+    gaps: List[Tuple[int, int]] = []
+    in_gap = False
+    gap_start = 0
+
+    for index, value in enumerate(projection):
+        if value <= max_content:
+            if not in_gap:
+                in_gap = True
+                gap_start = index
+        else:
+            if in_gap:
+                if index - gap_start >= min_gap:
+                    gaps.append((gap_start, index))
+                in_gap = False
+
+    if in_gap and len(projection) - gap_start >= min_gap:
+        gaps.append((gap_start, len(projection)))
+
+    return gaps
+
+
+def gaps_to_bands(
+    gaps: List[Tuple[int, int]], total_size: int, margin: int = 2
+) -> List[Tuple[int, int]]:
+    bands: List[Tuple[int, int]] = []
+    previous_end = 0
+
+    for gap_start, gap_end in gaps:
+        band_start = max(0, previous_end + margin)
+        band_end = min(total_size, gap_start - margin)
+        if band_end > band_start + 10:
+            bands.append((band_start, band_end))
+        previous_end = gap_end
+
+    band_start = max(0, previous_end + margin)
+    if total_size > band_start + 10:
+        bands.append((band_start, total_size))
+
+    return bands
+
+
+def save_pdf_panels(
+    figure_img: "Image.Image",
+    figure_num: int,
+    media_dir: Path,
+    *,
+    source_ref: str,
+    threshold: int = 245,
+    min_gap: int = 10,
+    pad: int = 2,
+) -> List[Dict[str, object]]:
+    gray = pil_to_gray_array(figure_img)
+    height, width = gray.shape
+
+    row_proj = row_projection(gray, threshold)
+    horizontal_gaps = find_projection_gaps(row_proj, min_gap=min_gap)
+    horizontal_bands = gaps_to_bands(horizontal_gaps, height) or [(0, height)]
+
+    labels = "abcdefghijklmnopqrstuvwxyz"
+    panels: List[Dict[str, object]] = []
+    label_index = 0
+
+    for band_y0, band_y1 in horizontal_bands:
+        band_gray = gray[band_y0:band_y1, :]
+        col_proj = col_projection(band_gray, threshold)
+        vertical_gaps = find_projection_gaps(col_proj, min_gap=min_gap)
+        vertical_bands = gaps_to_bands(vertical_gaps, width) or [(0, width)]
+
+        for band_x0, band_x1 in vertical_bands:
+            x0 = max(0, band_x0 - pad)
+            y0 = max(0, band_y0 - pad)
+            x1 = min(width, band_x1 + pad)
+            y1 = min(height, band_y1 + pad)
+
+            panel_img = figure_img.crop((x0, y0, x1, y1))
+            if panel_img.width < 100 or panel_img.height < 100:
+                if panel_img.width < 50 or panel_img.height < 50:
+                    continue
+
+            label = labels[label_index] if label_index < len(labels) else str(label_index)
+            filename = f"pdf-fig{figure_num}{label}.png"
+            destination = media_dir / filename
+            panel_img.save(destination, "PNG")
+            panels.append(
+                {
+                    "id": f"pdf-fig{figure_num}{label}",
+                    "caption": f"Figure {figure_num}{label.upper()}",
+                    "source_ref": source_ref,
+                    "section_hint": "",
+                    "output_rel": f"media/{filename}",
+                    "origin": "pdf-panel",
+                    "kind": "panel",
+                    "figure_num": figure_num,
+                    "panel_label": label,
+                    "score": panel_img.width * panel_img.height,
+                }
+            )
+            label_index += 1
+
+    return panels
+
+
 def parse_pdf(source_path: Path, media_dir: Path) -> Tuple[str, List[Dict[str, object]], List[Dict[str, object]]]:
-    if fitz is None:
-        raise SystemExit("PDF support requires PyMuPDF (`fitz`) to be installed.")
+    ensure_pdf_dependencies()
 
     entries: List[Dict[str, str]] = []
     images: List[Dict[str, object]] = []
-    seen_xrefs = set()
+    figure_counter = 0
 
     with fitz.open(source_path) as doc:
         title = extract_pdf_title(doc, source_path.stem)
         for page_index, page in enumerate(doc, start=1):
             page_text = page.get_text("text", sort=True)
             entries.extend(paragraphs_from_plain_text(page_text, f"Page {page_index}"))
+            page_area = page.rect.width * page.rect.height
+            for rect in cluster_pdf_image_rects(page):
+                expanded = rect + (-12, -12, 12, 12)
+                expanded = expanded & page.rect
+                image_area = expanded.width * expanded.height
+                ratio = image_area / page_area if page_area else 0.0
+                if ratio < 0.05:
+                    if expanded.width < 100 and expanded.height < 100:
+                        continue
 
-            for image_info in page.get_images(full=True):
-                xref = image_info[0]
-                width = int(image_info[2] or 0)
-                height = int(image_info[3] or 0)
-                if xref in seen_xrefs or width < 120 or height < 120:
+                try:
+                    pix = page.get_pixmap(clip=expanded, matrix=fitz.Matrix(4.0, 4.0), alpha=False)
+                except Exception:
                     continue
-                seen_xrefs.add(xref)
-                extracted = doc.extract_image(xref)
-                suffix = "." + extracted.get("ext", "png").lower()
-                filename = f"pdf-{page_index:02d}-{len(images)+1:02d}{suffix}"
+
+                if pix.width < 100 or pix.height < 100:
+                    if pix.width < 60 or pix.height < 60:
+                        continue
+                    if pix.width / max(1, pix.height) > 15 or pix.height / max(1, pix.width) > 15:
+                        continue
+
+                figure_counter += 1
+                figure_img = Image.open(io.BytesIO(pix.tobytes("png"))).convert("RGB")
+                filename = f"pdf-fig{figure_counter}.png"
                 destination = media_dir / filename
-                destination.write_bytes(extracted["image"])
+                figure_img.save(destination, "PNG")
+
+                panel_images = save_pdf_panels(
+                    figure_img,
+                    figure_counter,
+                    media_dir,
+                    source_ref=f"Page {page_index}",
+                )
                 images.append(
                     {
-                        "id": f"pdf-image-{len(images)+1}",
-                        "caption": f"Page {page_index} visual",
+                        "id": f"pdf-figure-{figure_counter}",
+                        "caption": f"Figure {figure_counter}",
                         "source_ref": f"Page {page_index}",
                         "section_hint": "",
                         "output_rel": f"media/{filename}",
-                        "origin": "pdf-embedded",
+                        "origin": "pdf-figure",
+                        "kind": "figure",
+                        "figure_num": figure_counter,
+                        "panel_label": "",
+                        "score": int(ratio * 100000),
+                        "panel_count": len(panel_images),
                     }
                 )
+                images.extend(panel_images)
 
     parsed_title, sections = sectionalize_entries(entries, fallback_title=title)
     return parsed_title or title, sections, images

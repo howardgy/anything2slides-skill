@@ -2,44 +2,113 @@
 
 [中文](README.zh-CN.md) | [English](README.en.md)
 
-`anything2slides-skill` is a reusable skill package for turning multiple source formats into editable, locally runnable Reveal.js presentations.
+`anything2slides-skill` is a reusable skill package for turning multiple source formats into editable, locally runnable Reveal.js HTML presentations.
 
-This project references and extends workflow ideas from [inhyeoklee/paper2slides-skill](https://github.com/inhyeoklee/paper2slides-skill), especially for the document-to-slides branch inspired by a `paper2slides`-style extraction and curation flow.
+This project references and extends workflow ideas from [inhyeoklee/paper2slides-skill](https://github.com/inhyeoklee/paper2slides-skill), especially for the `paper2slides`-style document workflow: extract first, understand second, then organize the final talk structure.
 
-## Quick Overview
+It has two operating modes:
 
-- `ppt` / `pptx`: preserve original slide order and approximate layout
-- `pdf` / `docx` / `md` / `html` / `txt`: extract text and visuals, design a narrative, then generate a curated Reveal deck
-- Unified entrypoint: `anything2slides-skill/scripts/anything2slides.py`
+- For `ppt` / `pptx`: rebuild the original deck as HTML while preserving slide order and the main layout
+- For `pdf` / `text` / `html` / `md` / `docx`: extract text and visuals first, then design the presentation structure and generate the final HTML deck
 
-## Repository Layout
+## Good Fits
 
-This repository is intentionally kept minimal:
+- Convert an existing PPT into a browser-presentable version
+- Turn PDF, Markdown, Word, or HTML content into show-ready slides
+- Produce an internal presentation demo for web hosting
+- Convert document content into an HTML deck that AI or humans can keep editing
+- Rebuild a PPT as web slides while keeping the original order and major layout
 
-- `README.md`
-- `README.zh-CN.md`
-- `README.en.md`
-- `anything2slides-skill/`
+## Installation
 
-## Get Started
+### Option 1: ask your coding tool to install the skill
 
-Use the skill directory in a compatible environment such as Codex Desktop, Codex CLI, Claude Code, or other local-skill-capable tooling.
-
-Install the Python runtime dependencies first:
-
-```bash
-python3 -m pip install beautifulsoup4 pymupdf
+```text
+Help me install the skill <your-github-repo-url>
 ```
 
-This repository is published as a source-only skill package. It does not include an installed virtualenv, wheel, `egg-info`, `build/`, `dist/`, or `__pycache__` artifacts.
+### Option 2: clone from GitHub and install manually
+
+```bash
+git clone <your-github-repo-url>
+mkdir -p ~/.codex/skills
+cp -R anything2slides-skill/anything2slides-skill ~/.codex/skills/
+```
+
+## Usage
+
+### Python setup
+
+Change into the skill directory and install the runtime dependencies from `requirements.txt`:
+
+```bash
+cd anything2slides-skill
+python3 -m pip install -r requirements.txt
+```
+
+Requirement:
+
+- Python 3.9 or newer
+
+### Ask the skill to run
+
+You can call the skill with natural language, for example:
+
+```text
+Turn this source material into a slide deck.
+```
+
+### Example prompts for coding tools
+
+- Codex Desktop / Codex CLI: `Please use the local skill at ./anything2slides-skill for file-to-Reveal conversion.`
+- Claude Code: `Use the local skill in ./anything2slides-skill to turn source files into Reveal.js slides.`
+- OpenClaw or similar tools: `Install the skill from ./anything2slides-skill and use it for document and PPT to Reveal.js conversion.`
+
+### Example natural-language requests
+
+- `Use $anything2slides-skill to convert ./examples/review.pdf into a Reveal.js deck in ./out/review-html`
+- `Use $anything2slides-skill to turn ./notes/status.md into slides in ./out/status-slides`
+- `Use $anything2slides-skill to convert ./deck/source.pptx into HTML slides in ./out/source-html`
+
+### Run the script directly
+
+From the repository root:
 
 ```bash
 python3 anything2slides-skill/scripts/anything2slides.py \
-  /path/to/input \
-  /path/to/work/show_ready
+  ./path/to/input \
+  ./out/show_ready
 ```
 
-For full installation and usage details, open:
+## Output Layout
 
-- [中文说明](README.zh-CN.md)
-- [English Documentation](README.en.md)
+### Extraction stage
+
+```text
+extracted/
+├── manifest.json
+├── slides_outline.md
+└── media/
+```
+
+For document-style sources:
+
+```text
+document_bundle/
+├── manifest.json
+├── source_outline.md
+└── media/
+```
+
+### Generated output
+
+```text
+show_ready/
+├── index.html
+├── speaker_notes.md
+└── assets/
+    ├── css/
+    └── media/
+```
+
+In practice, the generated HTML will usually appear at `show_ready/index.html` inside the output folder you provided.

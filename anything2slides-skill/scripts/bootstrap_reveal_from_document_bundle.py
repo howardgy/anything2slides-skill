@@ -227,6 +227,13 @@ def assign_images_to_sections(sections: Sequence[Dict[str, object]], images: Seq
     for image in images:
         hint = str(image.get("section_hint") or "")
         assigned_id = ""
+        image_ref = str(image.get("source_ref") or "")
+        if image_ref:
+            for section in sections:
+                refs = [str(ref) for ref in section.get("source_refs", [])]
+                if image_ref in refs:
+                    assigned_id = str(section.get("id"))
+                    break
         if hint in title_lookup:
             assigned_id = title_lookup[hint]
         elif hint:
@@ -246,6 +253,49 @@ def source_ref(section: Dict[str, object]) -> str:
     if not refs:
         return ""
     return ", ".join(str(ref) for ref in refs[:2])
+
+
+def group_pdf_visuals(images: Sequence[Dict[str, object]]) -> List[Dict[str, object]]:
+    groups: Dict[int, Dict[str, object]] = {}
+    for image in images:
+        kind = str(image.get("kind") or "")
+        if kind not in {"figure", "panel"}:
+            continue
+        figure_num = int(image.get("figure_num") or 0)
+        if figure_num <= 0:
+            continue
+        group = groups.setdefault(
+            figure_num,
+            {
+                "figure_num": figure_num,
+                "figure": None,
+                "panels": [],
+                "source_ref": str(image.get("source_ref") or ""),
+                "score": 0,
+            },
+        )
+        if kind == "figure":
+            group["figure"] = image
+        else:
+            group["panels"].append(image)
+        group["score"] = max(int(group["score"]), int(image.get("score") or 0))
+        if not group["source_ref"]:
+            group["source_ref"] = str(image.get("source_ref") or "")
+
+    grouped = list(groups.values())
+    for group in grouped:
+        group["panels"] = sorted(
+            group["panels"],
+            key=lambda item: str(item.get("panel_label") or ""),
+        )
+    grouped.sort(
+        key=lambda group: (
+            -len(group["panels"]),
+            -int(group["score"]),
+            int(group["figure_num"]),
+        )
+    )
+    return grouped
 
 
 def build_slide_notes(slide: Dict[str, object]) -> str:
@@ -272,6 +322,18 @@ def build_slide_notes(slide: Dict[str, object]) -> str:
             captions = [caption for caption in captions if caption]
             if captions:
                 notes.append("Point to the visuals as evidence: " + "; ".join(captions))
+    elif slide["kind"] == "figure_digest":
+        if slide.get("summary"):
+            notes.append(f"Start with the figure-level message: {slide['summary']}")
+        if slide.get("source_ref"):
+            notes.append(f"This visual evidence comes from {slide['source_ref']}.")
+        captions = [str(image.get("caption") or "").strip() for image in slide.get("images", [])[:4]]
+        captions = [caption for caption in captions if caption]
+        if captions:
+            notes.append("Walk panel by panel: " + "; ".join(captions))
+        bullets = slide.get("bullets", [])
+        if bullets:
+            notes.append("Tie the visuals back to: " + "; ".join(bullets[:3]))
     elif slide["kind"] == "takeaways":
         notes.append("Land the three or four ideas that should stay with the audience after the talk.")
     elif slide["kind"] == "closing":
@@ -280,7 +342,126 @@ def build_slide_notes(slide: Dict[str, object]) -> str:
     return " ".join(notes).strip()
 
 
+def build_pdf_slide_plan(manifest: Dict[str, object], max_slides: int) -> List[Dict[str, object]]:
+    sections = manifest.get("sections", [])
+    images = manifest.get("images", [])
+    overview = manifest.get("overview", {})
+    title = str(manifest.get("title") or Path(str(manifest["source_file"])).stem)
+    visual_groups = group_pdf_visuals(images)
+    visible_sections = choose_major_sections(sections, max(2, min(4, max_slides - 5)))
+    image_map = assign_images_to_sections(visible_sections, images)
+
+    slides: List[Dict[str, object]] = []
+    slides.append(
+        {
+            "kind": "hero",
+            "title": title,
+            "lede": short_text(summarize_section(visible_sections[0], 2) if visible_sections else title, 220),
+            "doc_shape": str(overview.get("doc_shape") or "research talk"),
+            "audience": str(overview.get("audience") or "technical audience"),
+            "stats": [
+                "PDF source",
+                f"{len(visual_groups)} figures recovered",
+                f"{sum(len(group['panels']) for group in visual_groups)} panels recovered",
+            ],
+        }
+    )
+    slides.append(
+        {
+            "kind": "overview",
+            "title": "Paper At A Glance",
+            "highlights": list(overview.get("highlights", []))[:4],
+            "doc_shape": str(overview.get("doc_shape") or "research talk"),
+            "audience": str(overview.get("audience") or "technical audience"),
+            "stats": [
+                f"{manifest.get('paragraph_count', 0)} paragraphs extracted",
+                f"{len(visual_groups)} figure groups",
+                f"{sum(len(group['panels']) for group in visual_groups)} total panels",
+            ],
+        }
+    )
+    if len(visible_sections) >= 3 and len(slides) < max_slides - 2:
+        slides.append(
+            {
+                "kind": "agenda",
+                "title": "Narrative Spine",
+                "items": [str(section.get("title") or "") for section in visible_sections],
+            }
+        )
+
+    for section in visible_sections:
+        if len(slides) >= max_slides - 3:
+            break
+        section_images = [image for image in image_map.get(str(section.get("id")), []) if str(image.get("kind") or "") != "figure"]
+        slides.append(
+            {
+                "kind": "content",
+                "title": str(section.get("title") or "Section"),
+                "summary": summarize_section(section, 2),
+                "bullets": section_bullets(section),
+                "images": section_images[:2],
+                "source_ref": source_ref(section),
+            }
+        )
+
+    remaining = max_slides - len(slides) - 2
+    if visual_groups and remaining > 0:
+        figure_groups = visual_groups[: min(3, remaining)]
+        for group in figure_groups:
+            related_section = None
+            for section in visible_sections:
+                refs = [str(ref) for ref in section.get("source_refs", [])]
+                if group["source_ref"] and group["source_ref"] in refs:
+                    related_section = section
+                    break
+            related_summary = summarize_section(related_section, 2) if related_section else "Figure-centric evidence from the source PDF."
+            related_bullets = section_bullets(related_section, 3) if related_section else []
+            slide_images = list(group["panels"])[:4] or ([group["figure"]] if group.get("figure") else [])
+            slides.append(
+                {
+                    "kind": "figure_digest",
+                    "title": f"Figure {group['figure_num']}",
+                    "summary": related_summary,
+                    "bullets": related_bullets,
+                    "images": slide_images,
+                    "source_ref": str(group.get("source_ref") or ""),
+                }
+            )
+            if len(slides) >= max_slides - 2:
+                break
+
+    takeaway_candidates: List[str] = []
+    for section in visible_sections:
+        takeaway_candidates.extend(section_bullets(section, 2))
+    takeaways = dedupe_keep_order([candidate for candidate in takeaway_candidates if candidate])[:4]
+    if not takeaways:
+        takeaways = list(overview.get("highlights", []))[:4]
+    slides.append(
+        {
+            "kind": "takeaways",
+            "title": "Takeaways",
+            "items": takeaways[:4],
+        }
+    )
+    slides.append(
+        {
+            "kind": "closing",
+            "title": "Closing Frame",
+            "items": [
+                "Use the extracted visuals as the first-stop evidence during rehearsal.",
+                f"Return to {Path(str(manifest['source_file'])).name} for raw PDF detail.",
+            ],
+        }
+    )
+    for slide in slides:
+        slide["notes"] = build_slide_notes(slide)
+    return slides[:max_slides]
+
+
 def build_slide_plan(manifest: Dict[str, object], max_slides: int) -> List[Dict[str, object]]:
+    if str(manifest.get("source_type") or "") == "pdf" and group_pdf_visuals(manifest.get("images", [])):
+        return build_pdf_slide_plan(manifest, max_slides)
+
     sections = manifest.get("sections", [])
     images = manifest.get("images", [])
     overview = manifest.get("overview", {})
@@ -434,7 +615,7 @@ def render_hero_slide(slide: Dict[str, object]) -> str:
     )
     return "\n".join(
         [
-            "      <section class=\"doc-slide hero-slide\">",
+            "      <section class=\"doc-slide hero-slide title-slide\">",
             "        <div class=\"doc-shell hero-shell\">",
             "          <div class=\"eyebrow\">Anything To Slides</div>",
             f"          <h1>{html_text(str(slide['title']))}</h1>",
@@ -462,25 +643,25 @@ def render_overview_slide(slide: Dict[str, object]) -> str:
     )
     return "\n".join(
         [
-            "      <section class=\"doc-slide\">",
+            "      <section class=\"doc-slide overview-slide\">",
             "        <div class=\"doc-shell\">",
             f"          <h2>{html_text(str(slide['title']))}</h2>",
-            "          <div class=\"doc-grid doc-grid-2\">",
-            "            <article class=\"doc-card\">",
-            "              <div class=\"card-eyebrow\">Deck strategy</div>",
-            f"              <p class=\"card-lede\">{html_text(str(slide.get('doc_shape') or 'Structured talk'))}</p>",
-            f"              <p>{html_text(str(slide.get('audience') or 'General audience'))}</p>",
+            "          <div class=\"overview-layout\">",
+            "            <article class=\"overview-meta-block\">",
+            "              <div class=\"overview-label\">Talk framing</div>",
+            f"              <p class=\"overview-line\"><strong>Format.</strong> {html_text(str(slide.get('doc_shape') or 'Structured talk'))}</p>",
+            f"              <p class=\"overview-line\"><strong>Audience.</strong> {html_text(str(slide.get('audience') or 'General audience'))}</p>",
             "            </article>",
-            "            <article class=\"doc-card\">",
-            "              <div class=\"card-eyebrow\">Extraction snapshot</div>",
-            "              <ul class=\"doc-list\">",
+            "            <article class=\"overview-meta-block\">",
+            "              <div class=\"overview-label\">Extraction snapshot</div>",
+            "              <ul class=\"doc-list overview-stat-list\">",
             stat_items,
             "              </ul>",
             "            </article>",
             "          </div>",
-            "          <div class=\"doc-callout\">",
-            "            <div class=\"card-eyebrow\">Top threads to carry through the talk</div>",
-            "            <ul class=\"doc-list\">",
+            "          <div class=\"overview-list-block\">",
+            "            <div class=\"overview-label\">Primary threads</div>",
+            "            <ul class=\"doc-list overview-thread-list\">",
             highlight_items,
             "            </ul>",
             "          </div>",
@@ -497,7 +678,7 @@ def render_agenda_slide(slide: Dict[str, object]) -> str:
             [
                 "            <li>",
                 f"              <span class=\"agenda-index\">{index + 1:02d}</span>",
-                f"              <span>{html_text(str(item))}</span>",
+                f"              <p>{html_text(str(item))}</p>",
                 "            </li>",
             ]
         )
@@ -505,10 +686,11 @@ def render_agenda_slide(slide: Dict[str, object]) -> str:
     )
     return "\n".join(
         [
-            "      <section class=\"doc-slide section-slide\">",
+            "      <section class=\"doc-slide section-slide agenda-slide\">",
             "        <div class=\"doc-shell\">",
             f"          <h2>{html_text(str(slide['title']))}</h2>",
-            "          <ol class=\"agenda-list\">",
+            "          <p class=\"section-subtitle\">The talk will move from framing to evidence to synthesis.</p>",
+            "          <ol class=\"agenda-stack\">",
             items,
             "          </ol>",
             render_notes_html(str(slide.get("notes") or "")),
@@ -545,18 +727,21 @@ def render_content_slide(slide: Dict[str, object]) -> str:
 
     return "\n".join(
         [
-            "      <section class=\"doc-slide\">",
+            "      <section class=\"doc-slide content-slide\">",
             "        <div class=\"doc-shell\">",
             f"          <div class=\"slide-kicker\">{html_text(str(slide.get('source_ref') or 'Core section'))}</div>",
             f"          <h2>{html_text(str(slide['title']))}</h2>",
-            f"          <p class=\"slide-summary\">{html_text(str(slide.get('summary') or ''))}</p>",
-            "          <div class=\"doc-two-col\">",
-            "            <div class=\"doc-copy\">",
-            "              <ul class=\"doc-list strong-list\">",
+            "          <div class=\"content-journal-layout\">",
+            "            <div class=\"content-main\">",
+            f"              <p class=\"slide-summary\">{html_text(str(slide.get('summary') or ''))}</p>",
+            "              <ul class=\"doc-list strong-list content-point-list\">",
             bullets,
             "              </ul>",
+            "              <div class=\"source-chip source-chip-inline\">",
+            f"                {html_text(str(slide.get('source_ref') or 'Core section'))}",
+            "              </div>",
             "            </div>",
-            "            <div class=\"doc-side\">",
+            "            <div class=\"content-aside\">",
             image_block,
             "            </div>",
             "          </div>",
@@ -574,7 +759,7 @@ def render_gallery_slide(slide: Dict[str, object]) -> str:
     figures = "\n".join(render_figure(image, compact=True) for image in slide.get("images", []))
     return "\n".join(
         [
-            "      <section class=\"doc-slide\">",
+            "      <section class=\"doc-slide gallery-slide\">",
             "        <div class=\"doc-shell\">",
             f"          <div class=\"slide-kicker\">{html_text(str(slide.get('source_ref') or 'Visual evidence'))}</div>",
             f"          <h2>{html_text(str(slide['title']))}</h2>",
@@ -598,26 +783,74 @@ def render_gallery_slide(slide: Dict[str, object]) -> str:
     )
 
 
+def render_figure_digest_slide(slide: Dict[str, object]) -> str:
+    bullets = "\n".join(
+        f"                <li>{html_text(str(item))}</li>" for item in slide.get("bullets", [])
+    )
+    figures = "\n".join(render_figure(image, compact=True) for image in slide.get("images", []))
+    insight_block = (
+        [
+            "              <div class=\"figure-summary\">",
+            f"                <p>{html_text(str(slide.get('summary') or ''))}</p>",
+            "              </div>",
+            "              <ul class=\"doc-list strong-list evidence-list\">",
+            bullets,
+            "              </ul>",
+        ]
+        if slide.get("bullets")
+        else [
+            "              <div class=\"figure-summary solo\">",
+            f"                <p>{html_text(str(slide.get('summary') or ''))}</p>",
+            "              </div>",
+        ]
+    )
+    return "\n".join(
+        [
+            "      <section class=\"doc-slide figure-digest-slide\">",
+            "        <div class=\"doc-shell\">",
+            f"          <div class=\"slide-kicker\">{html_text(str(slide.get('source_ref') or 'Visual evidence'))}</div>",
+            f"          <h2>{html_text(str(slide['title']))}</h2>",
+            "          <div class=\"figure-digest-layout\">",
+            "            <div class=\"figure-stage\">",
+            "              <div class=\"doc-gallery-grid figure-digest-grid\">",
+            figures,
+            "              </div>",
+            "            </div>",
+            "            <div class=\"figure-brief\">",
+            "              <div class=\"card-eyebrow\">Why this figure matters</div>",
+            *insight_block,
+            "              <div class=\"source-chip\">",
+            f"                {html_text(str(slide.get('source_ref') or 'Visual evidence'))}",
+            "              </div>",
+            "            </div>",
+            "          </div>",
+            render_notes_html(str(slide.get("notes") or "")),
+            "        </div>",
+            "      </section>",
+        ]
+    )
+
+
 def render_takeaways_slide(slide: Dict[str, object]) -> str:
     items = "\n".join(
         "\n".join(
             [
-                "            <article class=\"doc-card takeaway-card\">",
+                "            <li>",
                 f"              <span class=\"agenda-index\">{index + 1:02d}</span>",
                 f"              <p>{html_text(str(item))}</p>",
-                "            </article>",
+                "            </li>",
             ]
         )
         for index, item in enumerate(slide.get("items", []))
     )
     return "\n".join(
         [
-            "      <section class=\"doc-slide section-slide\">",
+            "      <section class=\"doc-slide section-slide takeaways-slide\">",
             "        <div class=\"doc-shell\">",
             f"          <h2>{html_text(str(slide['title']))}</h2>",
-            "          <div class=\"doc-grid doc-grid-2\">",
+            "          <ol class=\"takeaways-stack\">",
             items,
-            "          </div>",
+            "          </ol>",
             render_notes_html(str(slide.get("notes") or "")),
             "        </div>",
             "      </section>",
@@ -627,17 +860,26 @@ def render_takeaways_slide(slide: Dict[str, object]) -> str:
 
 def render_closing_slide(slide: Dict[str, object]) -> str:
     items = "\n".join(
-        f"            <li>{html_text(str(item))}</li>" for item in slide.get("items", [])
+        "\n".join(
+            [
+                "            <li>",
+                f"              <span class=\"agenda-index\">{index + 1:02d}</span>",
+                f"              <p>{html_text(str(item))}</p>",
+                "            </li>",
+            ]
+        )
+        for index, item in enumerate(slide.get("items", []))
     )
     return "\n".join(
         [
-            "      <section class=\"doc-slide closing-slide\">",
-            "        <div class=\"doc-shell hero-shell compact\">",
-            "          <div class=\"eyebrow\">Next Step</div>",
+            "      <section class=\"doc-slide section-slide closing-slide\">",
+            "        <div class=\"doc-shell\">",
+            "          <div class=\"eyebrow\">Discussion</div>",
             f"          <h2>{html_text(str(slide['title']))}</h2>",
-            "          <ul class=\"meta-pill-list closing-list\">",
+            "          <p class=\"section-subtitle\">Use the extracted visuals to anchor the discussion and next questions.</p>",
+            "          <ol class=\"closing-stack\">",
             items,
-            "          </ul>",
+            "          </ol>",
             render_notes_html(str(slide.get("notes") or "")),
             "        </div>",
             "      </section>",
@@ -655,6 +897,8 @@ def render_slide(slide: Dict[str, object]) -> str:
         return render_agenda_slide(slide)
     if kind == "gallery":
         return render_gallery_slide(slide)
+    if kind == "figure_digest":
+        return render_figure_digest_slide(slide)
     if kind == "takeaways":
         return render_takeaways_slide(slide)
     if kind == "closing":
@@ -666,9 +910,13 @@ def build_html(manifest: Dict[str, object], slides: Sequence[Dict[str, object]],
     rendered_slides = [render_slide(slide) for slide in slides]
     template = template_path.read_text(encoding="utf-8")
     title = str(manifest.get("title") or Path(str(manifest["source_file"])).stem)
+    source_type = re.sub(r"[^a-z0-9_-]+", "-", str(manifest.get("source_type") or "document").lower()).strip("-")
+    if not source_type:
+        source_type = "document"
     return (
         template.replace("{{TITLE}}", html_text(title))
         .replace("{{SOURCE_FILE}}", html_text(Path(str(manifest["source_file"])).name))
+        .replace("{{SOURCE_TYPE}}", html_text(source_type))
         .replace("{{REVEAL_WIDTH}}", str(DEFAULT_REVEAL_WIDTH))
         .replace("{{REVEAL_HEIGHT}}", str(DEFAULT_REVEAL_HEIGHT))
         .replace("{{SLIDES}}", "\n".join(rendered_slides))
