@@ -1,6 +1,6 @@
 # PPT2slides-skill
 
-`PPT2slides-skill` 是一个面向 Codex 生态的 skill，用来把 PowerPoint `.pptx` 演示文稿转换为可编辑、可本地打开、适合演讲的 Reveal.js HTML 幻灯片。
+`PPT2slides-skill` 是一个符合标准目录结构的通用 skill，用来把 PowerPoint `.pptx` 演示文稿转换为可编辑、可本地打开、适合演讲的 Reveal.js HTML 幻灯片。
 
 它的工作方式不是简单截图导出，而是先解析 PPTX 里的文本、备注、图片和版式几何信息，再生成一个结构尽量忠实于原稿的网页演示文档。
 
@@ -28,28 +28,41 @@
 - 生成结果仍可手工编辑，适合后续继续美化或重构
 - 提供图片缩放、lightbox、设置面板等演示增强能力
 
-## 适合安装到什么工具里
+## 标准兼容性
 
-当前仓库原生面向 **Codex skill 系统**，推荐安装到以下环境：
+这个项目采用标准的 skill 目录结构：
 
+- `SKILL.md`
+- `agents/`
+- `assets/`
+- `references/`
+- `scripts/`
+
+因此它不只适用于 Codex，也适合安装到支持这类 skill 目录约定的环境中，例如：
+
+- OpenClaw
+- 各类 Claw / claw-compatible 环境
 - Codex Desktop
 - Codex CLI
-- 任何读取 `$CODEX_HOME/skills` 或 `~/.codex/skills` 目录的 Codex 兼容环境
+- Claude Code
+- 其他支持本地 skill 目录挂载的兼容工具
 
-目前仓库没有直接提供以下工具的原生插件封装：
+换句话说，它不是某个单一产品专属格式，而是一个可以在多种 agent / coding assistant 环境中复用的标准 skill 包。
+
+目前仓库没有直接提供以下形态的独立插件封装：
 
 - PowerPoint 插件
 - 浏览器扩展
-- Cursor / VS Code 插件
+- Cursor / VS Code marketplace 插件
 - ChatGPT 自定义 GPT 插件包
-
-如果你愿意，后续也可以在这个仓库基础上继续封装成别的工具形态，但当前版本首先是一个 Codex skill。
 
 ## 安装方式
 
-### 方式 1：直接本地安装到 Codex
+### 方式 1：安装到兼容 skill 目录的环境
 
-假设你的 Codex skills 目录是 `~/.codex/skills`：
+把 `ppt2slides-skill/` 这个目录复制到你的 skill 搜索目录即可。
+
+例如在 Codex 类环境里，常见目录是 `~/.codex/skills`：
 
 ```bash
 mkdir -p ~/.codex/skills
@@ -67,7 +80,7 @@ cp -R /path/to/PPT2slides-skill/ppt2slides-skill ~/.codex/skills/
 └── scripts/
 ```
 
-如果你的 Codex 环境需要重启或重新加载 skills，请重新打开对应工具。
+如果你的宿主环境需要重启或重新加载 skills，请重新打开对应工具。
 
 ### 方式 2：作为 GitHub 项目拉取后安装
 
@@ -90,7 +103,7 @@ libreoffice --headless --convert-to pptx --outdir "./converted" "./input.ppt"
 
 ## 怎么使用
 
-### 在 Codex 中作为 skill 调用
+### 作为 skill 调用
 
 你可以直接让代理调用这个 skill，例如：
 
