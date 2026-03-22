@@ -1,29 +1,37 @@
-# PPT2slides-skill
+# anything2slides
 
-`PPT2slides-skill` 是一个符合标准目录结构的通用 skill，用来把 PowerPoint `.pptx` 演示文稿转换为可编辑、可本地打开、适合演讲的 Reveal.js HTML 幻灯片。
+`anything2slides` 是一个符合标准目录结构的通用 skill，用来把多种源材料转换为可编辑、可本地打开、适合演讲的 Reveal.js HTML 幻灯片。
 
-它的工作方式不是简单截图导出，而是先解析 PPTX 里的文本、备注、图片和版式几何信息，再生成一个结构尽量忠实于原稿的网页演示文档。
+它有两种工作模式：
+
+- 对于 `ppt` / `pptx`：严格按照原版 PPT 的页序和主要版式进行网页化重建
+- 对于 `pdf` / `text` / `html` / `md` / `docx`：参考 `paper2slides` 的流程，先提取文字与图片，再决定演示结构，最后制作 HTML 演示
 
 ## 这是什么
 
-这个项目包含一套可分发的 skill 和两个核心脚本：
+这个项目包含一套可分发的 skill、一个统一入口，以及两条实际可运行的转换管线：
 
+- `anything2slides.py`：统一入口，按源文件类型自动路由
 - `extract_pptx_bundle.py`：从 `.pptx` 中提取结构化内容、备注和媒体资源
 - `bootstrap_reveal_from_bundle.py`：根据提取结果生成 Reveal.js HTML 演示文稿
+- `extract_document_bundle.py`：从 `pdf` / `docx` / `md` / `html` / `txt` 中提取结构化文本与图片
+- `bootstrap_reveal_from_document_bundle.py`：根据文档 bundle 生成面向演讲的 Reveal.js deck
 
 输出结果适合以下场景：
 
 - 把现有 PPT 转成浏览器可演示版本
+- 把 PDF、Markdown、Word 或网页内容整理成 show-ready 幻灯片
 - 制作可托管到网页上的内部演示 demo
-- 将 PowerPoint 内容转成便于 AI 或人工继续编辑的 HTML deck
-- 在保留原始页序和主要布局的前提下，做一版 show-ready 的 Web Slides
+- 将文档内容转成便于 AI 或人工继续编辑的 HTML deck
+- 在保留原始 PPT 页序和主要布局的前提下，做一版 show-ready 的 Web Slides
 
 ## 核心特性
 
-- 保留原始页序，默认不擅自重排幻灯片
-- 尽量保留原始布局，使用 PPT 的几何坐标重建文本和图片位置
+- 对 `ppt` / `pptx` 保留原始页序，默认不擅自重排幻灯片
+- 对 `ppt` / `pptx` 尽量保留原始布局，使用 PPT 的几何坐标重建文本和图片位置
 - 提取 speaker notes，并生成可继续润色的备注文档
 - 自动拷贝嵌入媒体资源，生成相对路径可离线打开的 HTML
+- 对非 PPT 材料采用 paper2slides 风格的“先理解、再策划、再出片”流程
 - 默认输出 Reveal.js 风格的 show-ready 页面
 - 生成结果仍可手工编辑，适合后续继续美化或重构
 - 提供图片缩放、lightbox、设置面板等演示增强能力
@@ -60,19 +68,19 @@
 
 ### 方式 1：安装到兼容 skill 目录的环境
 
-把 `ppt2slides-skill/` 这个目录复制到你的 skill 搜索目录即可。
+把 `anything2slides/` 这个目录复制到你的 skill 搜索目录即可。
 
 例如在 Codex 类环境里，常见目录是 `~/.codex/skills`：
 
 ```bash
 mkdir -p ~/.codex/skills
-cp -R /path/to/PPT2slides-skill/ppt2slides-skill ~/.codex/skills/
+cp -R /path/to/anything2slides/anything2slides ~/.codex/skills/
 ```
 
 安装完成后，目录通常会变成：
 
 ```text
-~/.codex/skills/ppt2slides-skill/
+~/.codex/skills/anything2slides/
 ├── SKILL.md
 ├── agents/
 ├── assets/
@@ -87,13 +95,14 @@ cp -R /path/to/PPT2slides-skill/ppt2slides-skill ~/.codex/skills/
 ```bash
 git clone <your-github-repo-url>
 mkdir -p ~/.codex/skills
-cp -R PPT2slides-skill/ppt2slides-skill ~/.codex/skills/
+cp -R anything2slides/anything2slides ~/.codex/skills/
 ```
 
 ## 依赖要求
 
-- `python3`
-- 输入文件为 `.pptx`
+- `python3` 用于 PPT/PPTX 自动提取流程
+- 输入可以是：
+  `ppt`、`pptx`、`pdf`、`txt`、`text`、`html`、`md`、`docx`
 
 如果原始文件是 `.ppt`，先转成 `.pptx`，例如：
 
@@ -108,22 +117,40 @@ libreoffice --headless --convert-to pptx --outdir "./converted" "./input.ppt"
 你可以直接让代理调用这个 skill，例如：
 
 ```text
-用 $ppt2slides-skill 把这个 PPTX 转成一个可演讲的 Reveal.js HTML 演示文稿
+用 $anything2slides 把这个源材料转成一个可演讲的 Reveal.js HTML 演示文稿
 ```
 
 适合的请求方式包括：
 
-- 把这个 PPT 转成 HTML slides
-- 保持原始结构，做一个网页版演示
-- 把这个 deck 转成 Reveal.js
+- 把这个 PPT 转成 HTML slides，并保持原始结构
+- 把这个 PDF 做成一个适合汇报的网页演示
+- 基于这个 Markdown 文档做一版 show-ready 的 slides
+- 把这个 HTML 页面内容整理成一套演讲稿式的演示
 - 输出一个本地可打开、可编辑的 HTML presentation
 
 ### 手动运行脚本
 
+推荐优先使用统一入口：
+
+```bash
+python3 /path/to/anything2slides/scripts/anything2slides.py \
+  /path/to/input \
+  /path/to/work/show_ready
+```
+
+这个入口会自动判断：
+
+- `ppt` / `pptx`：走保真重建流程
+- `pdf` / `txt` / `html` / `md` / `docx`：走文档提炼 + 叙事生成流程
+
+如果你想分步运行，可以按下面的方式分别执行。
+
+### 分支 A：PPT / PPTX
+
 1. 提取 PPTX bundle
 
 ```bash
-python3 /path/to/ppt2slides-skill/scripts/extract_pptx_bundle.py \
+python3 /path/to/anything2slides/scripts/extract_pptx_bundle.py \
   /path/to/input.pptx \
   /path/to/work/extracted
 ```
@@ -137,8 +164,39 @@ python3 /path/to/ppt2slides-skill/scripts/extract_pptx_bundle.py \
 2. 生成 Reveal.js HTML deck
 
 ```bash
-python3 /path/to/ppt2slides-skill/scripts/bootstrap_reveal_from_bundle.py \
+python3 /path/to/anything2slides/scripts/bootstrap_reveal_from_bundle.py \
   /path/to/work/extracted \
+  /path/to/work/show_ready
+```
+
+这一步会生成：
+
+- `show_ready/index.html`
+- `show_ready/speaker_notes.md`
+- `show_ready/assets/css/style.css`
+- `show_ready/assets/media/`
+
+### 分支 B：PDF / Text / HTML / Markdown / DOCX
+
+1. 提取文档 bundle
+
+```bash
+python3 /path/to/anything2slides/scripts/extract_document_bundle.py \
+  /path/to/input.pdf \
+  /path/to/work/document_bundle
+```
+
+这一步会生成：
+
+- `manifest.json`
+- `source_outline.md`
+- `media/`
+
+2. 生成 Reveal.js HTML deck
+
+```bash
+python3 /path/to/anything2slides/scripts/bootstrap_reveal_from_document_bundle.py \
+  /path/to/work/document_bundle \
   /path/to/work/show_ready
 ```
 
@@ -160,6 +218,15 @@ extracted/
 └── media/
 ```
 
+文档型源的提取目录类似：
+
+```text
+document_bundle/
+├── manifest.json
+├── source_outline.md
+└── media/
+```
+
 ### 生成阶段输出
 
 ```text
@@ -173,17 +240,27 @@ show_ready/
 
 ## 工作流程
 
+### 分支 A：PPT / PPTX
+
 1. 从 `.pptx` 提取文字、备注、图片和几何布局信息
 2. 生成结构化 `manifest.json`
 3. 根据布局和媒体信息生成 HTML 幻灯片
 4. 保留原始 slide count 和大体排版
 5. 输出可继续手工编辑的 Reveal.js deck 和 speaker notes
 
+### 分支 B：PDF / Text / HTML / Markdown / DOCX
+
+1. 先提取标题、章节、段落和可用图片
+2. 判断应该做成什么类型的演示
+3. 自动规划合适的叙事结构、页数和重点
+4. 生成 HTML slides 和 speaker notes
+5. 这一分支参考 `paper2slides` 的 agent-driven 流程，而不是保真复刻原文档页面
+
 ## 项目结构
 
 ```text
-PPT2slides-skill/
-├── ppt2slides-skill/
+anything2slides/
+├── anything2slides/
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   ├── assets/
@@ -193,24 +270,24 @@ PPT2slides-skill/
 
 其中：
 
-- `ppt2slides-skill/SKILL.md`：skill 主说明和使用规则
-- `ppt2slides-skill/agents/openai.yaml`：代理展示配置
-- `ppt2slides-skill/assets/`：HTML 模板、CSS、speaker notes 模板
-- `ppt2slides-skill/references/output_contract.md`：提取结果字段说明
-- `ppt2slides-skill/scripts/`：两个核心脚本
+- `anything2slides/SKILL.md`：skill 主说明和使用规则
+- `anything2slides/agents/openai.yaml`：代理展示配置
+- `anything2slides/assets/`：HTML 模板、CSS、speaker notes 模板
+- `anything2slides/references/output_contract.md`：提取结果字段说明
+- `anything2slides/scripts/`：统一入口 + PPT/PPTX + 文档型源核心脚本
 
 ## 命令示例
 
 你可以用下面的方式手动验证流程：
 
 ```bash
-python3 ppt2slides-skill/scripts/extract_pptx_bundle.py /path/to/input.pptx /tmp/ppt2slides_skill_extracted
-python3 ppt2slides-skill/scripts/bootstrap_reveal_from_bundle.py /tmp/ppt2slides_skill_extracted /tmp/ppt2slides_skill_show_ready
+python3 anything2slides/scripts/extract_pptx_bundle.py /path/to/input.pptx /tmp/anything2slides_extracted
+python3 anything2slides/scripts/bootstrap_reveal_from_bundle.py /tmp/anything2slides_extracted /tmp/anything2slides_show_ready
 ```
 
 ## 限制说明
 
-当前版本优先保证“稳健提取 + 可编辑重建”，不是 PowerPoint 的像素级完全复刻。以下内容可能需要人工复核：
+对于 PPT 模式，当前版本优先保证“稳健提取 + 可编辑重建”，不是 PowerPoint 的像素级完全复刻。以下内容可能需要人工复核：
 
 - SmartArt 语义
 - 图表数据重建
@@ -226,14 +303,14 @@ python3 ppt2slides-skill/scripts/bootstrap_reveal_from_bundle.py /tmp/ppt2slides
 如果你准备把这个项目发到自己的 GitHub，建议仓库根目录保留：
 
 - `README.md`
-- `ppt2slides-skill/`
+- `anything2slides/`
 
 然后执行：
 
 ```bash
 git init
 git add .
-git commit -m "Initial commit: add PPT2slides-skill"
+git commit -m "Initial commit: add anything2slides"
 git branch -M main
 git remote add origin <your-github-repo-url>
 git push -u origin main
