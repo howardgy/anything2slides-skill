@@ -25,6 +25,14 @@ This repository is intentionally kept minimal:
 
 Use the skill directory in a compatible environment such as Codex Desktop, Codex CLI, Claude Code, or other local-skill-capable tooling.
 
+Install the Python runtime dependencies first:
+
+```bash
+python3 -m pip install beautifulsoup4 pymupdf
+```
+
+This repository is published as a source-only skill package. It does not include an installed virtualenv, wheel, `egg-info`, `build/`, `dist/`, or `__pycache__` artifacts.
+
 ```bash
 python3 anything2slides-skill/scripts/anything2slides.py \
   /path/to/input \

@@ -70,6 +70,25 @@
 
 ## 安装方式
 
+### Python 环境安装
+
+当前仓库还没有单独提供 `anything2slides-skill/library` 这样的 Python 库目录。
+
+因此推荐直接安装运行时依赖：
+
+```bash
+python3 -m pip install beautifulsoup4 pymupdf
+```
+
+依赖要求：
+
+- Python 3.9 及以上
+- `beautifulsoup4`：用于 HTML 解析和文档抽取
+- `pymupdf`：用于 PDF 内容抽取
+- LibreOffice 为可选依赖，但当你需要把旧版 `.ppt` 转成 `.pptx` 时会很有用
+
+推送到 GitHub 的版本建议始终保持为“未安装的源码版本”，不要包含本地虚拟环境或构建产物，例如 `build/`、`dist/`、`*.egg-info`、`__pycache__/` 等目录。
+
 ### 方式 1：安装到兼容 skill 目录的环境
 
 把 `anything2slides-skill/` 这个目录复制到你的 skill 搜索目录即可。

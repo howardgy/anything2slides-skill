@@ -70,6 +70,25 @@ The repository does not currently provide standalone packaging for:
 
 ## Installation
 
+### Python setup
+
+This repository does not currently ship a separate `anything2slides-skill/library` Python package directory.
+
+Instead, install the runtime dependencies directly:
+
+```bash
+python3 -m pip install beautifulsoup4 pymupdf
+```
+
+Requirements:
+
+- Python 3.9 or newer
+- `beautifulsoup4` for HTML parsing and document extraction
+- `pymupdf` for PDF extraction
+- LibreOffice is optional, but useful when you need to convert legacy `.ppt` files into `.pptx`
+
+The version pushed to GitHub is intended to remain a source-only repository. It does not include an installed environment or generated packaging artifacts such as `build/`, `dist/`, `*.egg-info`, or `__pycache__/`.
+
 ### Option 1: Install into a compatible skill directory
 
 Copy `anything2slides-skill/` into your skill search path.
